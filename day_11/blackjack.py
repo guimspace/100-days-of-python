@@ -1,28 +1,32 @@
 import random
 
+
 def init_game(game):
     game["decks"] = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10] * game["num_decks"]
     random.shuffle(game["decks"])
 
-    game["dealer"] = [];
-    game["player"] = [];
+    game["dealer"] = []
+    game["player"] = []
 
     hit_deck(game)
     hit_deck(game, "dealer")
 
     hit_deck(game)
     hit_deck(game, "dealer")
+
 
 def print_stats(stats):
     print(f"Stats: {' '.join([str(i) for i in stats])}")
 
-def print_hands(game, game_on = True):
+
+def print_hands(game, game_on=True):
     if game_on:
         print(f"Dealer: ? = ? + {' + '.join([str(i) for i in game['dealer'][1::]])}")
     else:
         print(f"Dealer: {sum(game['dealer'])} = {' + '.join([str(i) for i in game['dealer']])}")
 
     print(f"Player: {sum(game['player'])} = {' + '.join([str(i) for i in game['player']])}")
+
 
 def end_game(p):
     if p == -1:
@@ -33,14 +37,17 @@ def end_game(p):
         print("Tie")
     input("")
 
-def fix_hand(game, t = "player"):
+
+def fix_hand(game, t="player"):
     while sum(game[t]) > 21 and 11 in game[t]:
         i = game[t].index(11)
         game[t][i] = 1
 
-def hit_deck(game, t = "player"):
+
+def hit_deck(game, t="player"):
     game[t].append(game["decks"].pop())
     fix_hand(game, t)
+
 
 def main():
     stats = [0, 0, 0]
@@ -100,6 +107,7 @@ def main():
         print("")
         stats[1 + p] += 1
         end_game(p)
+
 
 if __name__ == "__main__":
     main()
