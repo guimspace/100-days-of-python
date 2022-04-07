@@ -8,10 +8,6 @@ resources = {
 }
 
 
-def turn_off():
-    quit()
-
-
 def print_report():
     print(f'Water: {resources["water"]}ml')
     print(f'Milk: {resources["milk"]}ml')
@@ -85,7 +81,7 @@ def main():
     while True:
         o = input("​What would you like? (espresso/latte/cappuccino): ").lower()
         if o == "off":
-            turn_off()
+            break
         elif o == "report":
             print_report()
         elif o == "espresso" or o == "latte" or o == "cappuccino":
