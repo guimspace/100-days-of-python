@@ -20,6 +20,7 @@ class Snake:
             })
 
         self.segments = segments
+        self.head = segments[0]["seg"]
 
     def up(self):
         heading = self.segments[0]["seg"].heading()
