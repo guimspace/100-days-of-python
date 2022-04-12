@@ -1,33 +1,75 @@
-import time
-from turtle import Turtle, Screen
+from turtle import Turtle
+
+STEP_DISTANCE = 20
 
 
-def main():
-    screen = Screen()
-    screen.setup(height=600, width=600)
-    screen.bgcolor("black")
+class Snake:
+    def __init__(self):
+        segments = []
+        for i in range(3):
+            seg = Turtle(shape="square")
+            seg.color("white")
+            seg.penup()
+            seg.speed("fastest")
 
-    screen.tracer(n=0)
+            seg.goto(-STEP_DISTANCE * i, 0)
 
-    segments = []
-    for i in range(3):
-        seg = Turtle(shape="square")
-        seg.color("white")
+            segments.append({
+                "seg": seg,
+                "mv": "forward"
+            })
 
-        seg.penup()
-        seg.goto(-20 * i, 0)
+        self.segments = segments
 
-        segments.append(seg)
+    def up(self):
+        heading = self.segments[0]["seg"].heading()
+        if heading == 90 or heading == 270:
+            return
+        elif heading == 0:
+            self.segments[0]["mv"] = "left"
+        else:
+            self.segments[0]["mv"] = "right"
 
-    while True:
-        screen.update()
-        time.sleep(0.2)
+    def down(self):
+        heading = self.segments[0]["seg"].heading()
+        if heading == 90 or heading == 270:
+            return
+        elif heading == 0:
+            self.segments[0]["mv"] = "right"
+        else:
+            self.segments[0]["mv"] = "left"
 
-        for seg in segments:
-            seg.forward(10)
+    def left(self):
+        heading = self.segments[0]["seg"].heading()
+        if heading == 0 or heading == 180:
+            return
+        elif heading == 90:
+            self.segments[0]["mv"] = "left"
+        else:
+            self.segments[0]["mv"] = "right"
 
-    screen.exitonclick()
+    def right(self):
+        heading = self.segments[0]["seg"].heading()
+        if heading == 0 or heading == 180:
+            return
+        elif heading == 90:
+            self.segments[0]["mv"] = "right"
+        else:
+            self.segments[0]["mv"] = "left"
 
+    def turn(self, seg):
+        if seg["mv"] == "right":
+            seg["seg"].right(90)
+        elif seg["mv"] == "left":
+            seg["seg"].left(90)
 
-if __name__ == "__main__":
-    main()
+    def move(self):
+        self.turn(self.segments[0])
+        self.segments[0]["seg"].forward(STEP_DISTANCE)
+
+        for i in range(len(self.segments) - 1, 0, -1):
+            self.turn(self.segments[i])
+            self.segments[i]["seg"].forward(STEP_DISTANCE)
+            self.segments[i]["mv"] = self.segments[i - 1]["mv"]
+
+        self.segments[0]["mv"] = "forward"
