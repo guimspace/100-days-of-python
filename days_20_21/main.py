@@ -51,6 +51,10 @@ def main():
             snake.grow()
             scoreboard.increment_score()
 
+        for seg in snake.segments[1:]:
+            if snake.head.distance(seg["seg"]) < 10:
+                game_on = False
+
     scoreboard.game_over()
     screen.exitonclick()
 
