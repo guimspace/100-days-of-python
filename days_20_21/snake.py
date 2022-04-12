@@ -5,22 +5,26 @@ STEP_DISTANCE = 20
 
 class Snake:
     def __init__(self):
-        segments = []
+        self.segments = []
         for i in range(3):
-            seg = Turtle(shape="square")
-            seg.color("white")
-            seg.penup()
-            seg.speed("fastest")
+            self.add_segment((-STEP_DISTANCE * (1 + i), 0), 0)
 
-            seg.goto(-STEP_DISTANCE * i, 0)
+        self.head = self.segments[0]["seg"]
 
-            segments.append({
-                "seg": seg,
-                "mv": "forward"
-            })
+    def add_segment(self, pos, angle):
+        seg = Turtle(shape="square")
+        seg.color("white")
+        seg.penup()
 
-        self.segments = segments
-        self.head = segments[0]["seg"]
+        seg.goto(pos)
+        seg.setheading(angle)
+        seg.backward(STEP_DISTANCE)
+
+        self.segments.append({"seg": seg, "mv": "forward"})
+
+    def grow(self):
+        seg = self.segments[-1]["seg"]
+        self.add_segment(seg.pos(), seg.heading())
 
     def up(self):
         heading = self.segments[0]["seg"].heading()
