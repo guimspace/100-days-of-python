@@ -4,6 +4,7 @@ from turtle import Turtle
 TABLE_WIDTH = 274
 TABLE_ZOOM = 4
 
+TIME_TO_TARGET = 4
 FPS = 60
 
 
@@ -13,12 +14,16 @@ class Ball(Turtle):
 
         self.shape("circle")
         self.color("white")
-        self.shapesize(stretch_wid=0.5, stretch_len=0.5)
+        self.shapesize(stretch_wid=1, stretch_len=1)
         self.penup()
 
         self.refresh()
 
-        self.step = round(TABLE_ZOOM * TABLE_WIDTH / 2 * (1 / FPS), 2)
+        self.step = round(TABLE_ZOOM * TABLE_WIDTH / TIME_TO_TARGET * (1 / FPS), 2)
+
+    def reflect_direction(self, direction):
+        new_heading = 90 + self.heading()
+        self.setheading(new_heading)
 
     def refresh(self):
         self.goto(0, 0)
