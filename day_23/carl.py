@@ -23,6 +23,7 @@ class Carl(Turtle):
         self.refresh()
 
     def refresh(self):
+        self.num_lane = 0
         self.goto(self.x_middle, self.y_center)
         self.setheading(90)
 

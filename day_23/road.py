@@ -13,6 +13,7 @@ class Road:
                      height=consts.NUM_LANES * consts.BLOCK_SIZE)
         screen.bgcolor("gray")
         screen.listen()
+        screen.colormode(255)
         screen.tracer(2)
         self.screen = screen
 
