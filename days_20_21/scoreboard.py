@@ -11,6 +11,19 @@ class Scoreboard(Turtle):
         self.goto(0, 280)
 
         self.score = 0
+        self.high_score = 0
+        self.lifes = 5
+        self.refresh_board()
+
+    def has_lifes(self):
+        return self.lifes > 0
+
+    def reset(self):
+        if self.score > self.high_score:
+            self.high_score = self.score
+
+        self.score = 0
+        self.lifes -= 1
         self.refresh_board()
 
     def game_over(self):
@@ -18,9 +31,9 @@ class Scoreboard(Turtle):
         self.write("GAME OVER", align="center")
 
     def refresh_board(self):
-        self.write(f"Score: {self.score}", align="center")
+        self.clear()
+        self.write(f"Lifes: {self.lifes}\tScore: {self.score}\tHigh score: {self.high_score}", align="center")
 
     def increment_score(self):
         self.score += 1
-        self.clear()
         self.refresh_board()

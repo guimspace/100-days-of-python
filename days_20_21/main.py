@@ -31,10 +31,21 @@ def main():
     screen.onkey(snake.right, "Right")
 
     game_on = True
-    while game_on:
-        screen.update()
-        time.sleep(0.1)
-        snake.move()
+    while scoreboard.has_lifes():
+        if game_on:
+            screen.update()
+            time.sleep(0.1)
+            snake.move()
+        else:
+            snake.die()
+            snake = Snake()
+            food.refresh()
+            scoreboard.reset()
+            screen.onkey(snake.up, "Up")
+            screen.onkey(snake.down, "Down")
+            screen.onkey(snake.left, "Left")
+            screen.onkey(snake.right, "Right")
+            game_on = True
 
         head_xcor = snake.head.xcor()
         head_ycor = snake.head.ycor()

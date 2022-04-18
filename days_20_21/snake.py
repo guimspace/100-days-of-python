@@ -26,6 +26,14 @@ class Snake:
         seg = self.segments[-1]["seg"]
         self.add_segment(seg.pos(), seg.heading())
 
+    def die(self):
+        for seg in self.segments:
+            seg["seg"].hideturtle()
+            del seg
+
+        self.segments = None
+        self.head = None
+
     def up(self):
         heading = self.segments[0]["seg"].heading()
         if heading == 90 or heading == 270:
