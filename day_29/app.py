@@ -1,4 +1,7 @@
 from tkinter import *
+from tkinter import messagebox
+
+from bad_db import BadDb
 
 
 class App:
@@ -8,6 +11,9 @@ class App:
         self._buttons = {}
         self._media = {}
 
+        self._db = BadDb("./plaintext.csv")
+
+    def create_frame(self):
         self._media["logo"] = PhotoImage(file="logo.png")
 
         self._root.title("Bad Password Manager")
@@ -30,8 +36,26 @@ class App:
         self._entries["password"].grid(column=1, row=3)
 
         self._buttons["generate"] = Button(text="Generate").grid(column=2, row=3)
-        self._buttons["add"] = Button(text="Add", width=32).grid(column=1, row=4, columnspan=2)
+        self._buttons["add"] = Button(text="Add", width=32, command=self.add_item).grid(column=1, row=4, columnspan=2)
 
     def launch(self):
+        self.create_frame()
         self._entries["name"].focus()
         self._root.mainloop()
+
+    def add_item(self):
+        item = {}
+        for key in self._entries:
+            item[key] = str(self._entries[key].get())
+            if len(item[key]) == 0:
+                self._entries[key].focus()
+                messagebox.showinfo(title="Can't add item",
+                                    message="Please complete all the fields.")
+                return
+
+        self._db.append_item(item)
+        self.clear_entries()
+
+    def clear_entries(self):
+        for key in self._entries:
+            self._entries[key].delete(0, END)

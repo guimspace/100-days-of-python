@@ -2,7 +2,12 @@ from app import App
 
 
 def main():
-    app = App()
+    try:
+        app = App()
+    except Exception:
+        app = None
+        return
+
     app.launch()
 
 
