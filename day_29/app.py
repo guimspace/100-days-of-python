@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 
 from bad_db import BadDb
+from bad_pw_generator import BadPwGenerator
 
 
 class App:
@@ -35,7 +36,7 @@ class App:
         self._entries["password"] = Entry(width=21)
         self._entries["password"].grid(column=1, row=3)
 
-        self._buttons["generate"] = Button(text="Generate").grid(column=2, row=3)
+        self._buttons["generate"] = Button(text="Generate", command=self.generate_pw).grid(column=2, row=3)
         self._buttons["add"] = Button(text="Add", width=32, command=self.add_item).grid(column=1, row=4, columnspan=2)
 
     def launch(self):
@@ -59,3 +60,8 @@ class App:
     def clear_entries(self):
         for key in self._entries:
             self._entries[key].delete(0, END)
+
+    def generate_pw(self):
+        pw = BadPwGenerator.generate()
+        self._entries["password"].delete(0, END)
+        self._entries["password"].insert(0, pw)
