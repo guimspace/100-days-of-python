@@ -37,6 +37,10 @@ class App(Pomodoro):
         self.button_main = tkinter.Button(text="Start", width=8, command=self.process_job)
         self.button_main.grid(column=0, row=2)
 
+        self.check_mark = tkinter.Label(text="", fg=GREEN, bg=YELLOW,
+                                        font=(FONT_NAME, 24, "bold"))
+        self.check_mark.grid(column=1, row=3)
+
         tkinter.Button(text="Reset", command=self.reset_session).grid(column=2, row=2)
 
     def launch(self):
@@ -54,6 +58,7 @@ class App(Pomodoro):
             self.header.config(text="Break", fg=PINK)
 
             self.this_session += 1
+            self.refresh_checkmark()
             if self.this_session < self.NUM_SESSIONS:
                 self.job = "short-break"
                 time_break = self.SHORT_BREAK_MIN
@@ -87,10 +92,11 @@ class App(Pomodoro):
 
     def reset_session(self):
         self.job = None
-        self.zero_count_down()
+        self.this_session = 0
         self.header.config(text="Timer", fg=GREEN)
         self.button_main.config(text="Start", width=8, command=self.process_job)
-        self.this_session = 0
+        self.zero_count_down()
+        self.refresh_checkmark()
 
     def zero_count_down(self):
         if self.after_id is not None:
@@ -107,6 +113,9 @@ class App(Pomodoro):
         else:
             self.after_id = None
             self.process_job()
+
+    def refresh_checkmark(self):
+        self.check_mark.config(text="✓ " * self.this_session)
 
     def refresh_timer(self):
         sec = self.time_left % 60
