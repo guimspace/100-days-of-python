@@ -37,7 +37,7 @@ class App(Pomodoro):
         self.button_main = tkinter.Button(text="Start", width=8, command=self.process_job)
         self.button_main.grid(column=0, row=2)
 
-        tkinter.Button(text="Reset").grid(column=2, row=2)
+        tkinter.Button(text="Reset", command=self.reset_session).grid(column=2, row=2)
 
     def launch(self):
         self.window.mainloop()
@@ -50,19 +50,27 @@ class App(Pomodoro):
             self.start_timer(self.WORK_MIN)
 
         elif self.job == "work":
-            self.job = "short-break"
             self.button_main.config(text="Skip", width=8, command=self.process_job)
             self.header.config(text="Break", fg=PINK)
-            self.start_timer(self.SHORT_BREAK_MIN)
+
+            self.this_session += 1
+            if self.this_session < self.NUM_SESSIONS:
+                self.job = "short-break"
+                time_break = self.SHORT_BREAK_MIN
+            else:
+                self.job = "long-break"
+                time_break = self.LONG_BREAK_MIN
+
+            self.start_timer(time_break)
 
         elif self.job == "short-break":
             self.job = None
             self.header.config(text="Timer", fg=GREEN)
             self.button_main.config(text="Start", width=8, command=self.process_job)
-            if self.after_id is not None:
-                self.window.after_cancel(self.after_id)
-                self.time_left = 0
-                self.refresh_timer()
+            self.zero_count_down()
+
+        elif self.job == "long-break":
+            self.reset_session()
 
     def start_timer(self, time):
         self.time_left = 60 * time
@@ -76,6 +84,20 @@ class App(Pomodoro):
     def continue_job(self):
         self.button_main.config(text="Pause", width=8, command=self.pause_job)
         self.count_down()
+
+    def reset_session(self):
+        self.job = None
+        self.zero_count_down()
+        self.header.config(text="Timer", fg=GREEN)
+        self.button_main.config(text="Start", width=8, command=self.process_job)
+        self.this_session = 0
+
+    def zero_count_down(self):
+        if self.after_id is not None:
+            self.window.after_cancel(self.after_id)
+
+        self.time_left = 0
+        self.refresh_timer()
 
     def count_down(self):
         self.refresh_timer()
