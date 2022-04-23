@@ -8,6 +8,8 @@ from bad_pw_generator import BadPwGenerator
 class App:
     def __init__(self):
         self._root = Tk()
+        self._root.withdraw()
+
         self._entries = {}
         self._buttons = {}
         self._media = {}
@@ -41,7 +43,10 @@ class App:
         self._buttons["generate"] = Button(text="Generate", command=self.generate_pw).grid(column=2, row=3)
         self._buttons["add"] = Button(text="Add", width=32, command=self.add_item).grid(column=1, row=4, columnspan=2)
 
+        self._root.deiconify()
+
     def launch(self):
+        self._vault.open_vault()
         self.create_frame()
         self._entries["name"].focus()
         self._root.mainloop()

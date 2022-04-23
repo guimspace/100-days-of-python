@@ -3,12 +3,9 @@ from app import App
 
 def main():
     try:
-        app = App()
+        App().launch()
     except Exception:
-        app = None
-        return
-
-    app.launch()
+        pass
 
 
 if __name__ == "__main__":
