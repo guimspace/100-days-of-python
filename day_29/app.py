@@ -25,8 +25,10 @@ class App:
         canvas.grid(column=0, row=0, columnspan=3)
 
         Label(text="Name").grid(column=0, row=1)
-        self._entries["name"] = Entry(width=35)
-        self._entries["name"].grid(column=1, row=1, columnspan=2)
+        self._entries["name"] = Entry(width=26)
+        self._entries["name"].grid(column=1, row=1)
+
+        self._buttons["search"] = Button(text="Search", command=self.search_item).grid(column=2, row=1)
 
         Label(text="Username").grid(column=0, row=2)
         self._entries["username"] = Entry(width=35)
@@ -50,12 +52,32 @@ class App:
             item[key] = str(self._entries[key].get())
             if len(item[key]) == 0:
                 self._entries[key].focus()
-                messagebox.showinfo(title="Can't add item",
+                messagebox.showinfo(title="Can't Add Item",
                                     message="Please complete all the fields.")
                 return
 
         self._vault.add_item(item)
         self.clear_entries()
+
+    def search_item(self):
+        name = str(self._entries["name"].get())
+        if len(name) == 0:
+            self._entries["name"].focus()
+            messagebox.showinfo(title="Can't Search Item",
+                                message="Please enter a name.")
+            return
+
+        item = self._vault.get_item(name)
+        if item is None:
+            messagebox.showinfo(title="Item Not Found",
+                                message="Could not find this item.")
+            return
+
+        self._entries["username"].delete(0, END)
+        self._entries["username"].insert(0, item["username"])
+
+        self._entries["password"].delete(0, END)
+        self._entries["password"].insert(0, item["password"])
 
     def clear_entries(self):
         for key in self._entries:
