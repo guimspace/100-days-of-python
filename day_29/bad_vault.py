@@ -1,20 +1,25 @@
-import csv
+import json
+import uuid
 
 
 class BadVault:
     def __init__(self, filepath):
         self._filepath = filepath
+        self._vault = {}
 
         try:
-            with open(filepath, "a", encoding="utf-8") as csvfile:
-                print(f"BadVault: {filepath} ok")
+            with open(filepath, "r", encoding="utf-8") as vault:
+                self._vault = json.load(vault)
+        except FileNotFoundError:
+            with open(filepath, "w", encoding="utf-8") as vault:
+                json.dump(self._vault, vault, indent=4)
 
-        except Exception:
-            print("BadVault: bad file")
-            raise
+        print("BadVault: ok")
 
-    def append_item(self, item):
-        with open(self._filepath, "a", encoding="utf-8") as csvfile:
-            csv.DictWriter(csvfile,
-                           fieldnames=("name", "username", "password")
-                           ).writerow(item)
+    def add_item(self, item):
+        item_uuid = str(uuid.uuid4())
+        self._vault.update({item_uuid: item})
+
+        with open(self._filepath, "w", encoding="utf-8") as vault:
+            json.dump(self._vault, vault, indent=4)
+            print("BadVault: item added")

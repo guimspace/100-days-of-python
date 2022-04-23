@@ -12,7 +12,7 @@ class App:
         self._buttons = {}
         self._media = {}
 
-        self._vault = BadVault("./plaintext.csv")
+        self._vault = BadVault("./plaintext.json")
 
     def create_frame(self):
         self._media["logo"] = PhotoImage(file="logo.png")
@@ -54,7 +54,7 @@ class App:
                                     message="Please complete all the fields.")
                 return
 
-        self._vault.append_item(item)
+        self._vault.add_item(item)
         self.clear_entries()
 
     def clear_entries(self):
