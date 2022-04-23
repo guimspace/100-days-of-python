@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 
-from bad_db import BadDb
+from bad_vault import BadVault
 from bad_pw_generator import BadPwGenerator
 
 
@@ -12,7 +12,7 @@ class App:
         self._buttons = {}
         self._media = {}
 
-        self._db = BadDb("./plaintext.csv")
+        self._vault = BadVault("./plaintext.csv")
 
     def create_frame(self):
         self._media["logo"] = PhotoImage(file="logo.png")
@@ -54,7 +54,7 @@ class App:
                                     message="Please complete all the fields.")
                 return
 
-        self._db.append_item(item)
+        self._vault.append_item(item)
         self.clear_entries()
 
     def clear_entries(self):

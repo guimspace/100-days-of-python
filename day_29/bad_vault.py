@@ -1,16 +1,16 @@
 import csv
 
 
-class BadDb:
+class BadVault:
     def __init__(self, filepath):
         self._filepath = filepath
 
         try:
             with open(filepath, "a", encoding="utf-8") as csvfile:
-                print(f"BadDb: {filepath} ok")
+                print(f"BadVault: {filepath} ok")
 
         except Exception:
-            print("BadDb: bad file")
+            print("BadVault: bad file")
             raise
 
     def append_item(self, item):
