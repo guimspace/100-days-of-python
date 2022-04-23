@@ -2,6 +2,7 @@ import json
 import uuid
 
 from askpw import AskPw
+from badcrypto import BadCrypto
 
 
 class BadVault:
@@ -24,11 +25,17 @@ class BadVault:
 
     def add_item(self, item):
         item_uuid = str(uuid.uuid4())
-        self._vault.update({item_uuid: item})
+        enc_item = self.encrypt_item(item)
+        self._vault.update({item_uuid: enc_item})
 
         with open(self._filepath, "w", encoding="utf-8") as vault:
             json.dump(self._vault, vault, indent=4)
             print("BadVault: item added")
+
+    def encrypt_item(self, item):
+        for key in item:
+            item[key] = BadCrypto.encrypt(self._password, item[key])
+        return item
 
     def get_item(self, name):
         for key in self._vault:
