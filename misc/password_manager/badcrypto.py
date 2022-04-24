@@ -1,4 +1,4 @@
-from base64 import b64encode
+from base64 import b64encode, b64decode
 from random import choices
 
 from cryptography.exceptions import AlreadyFinalized
@@ -13,6 +13,59 @@ POOL = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
 class BadCrypto:
     def randbytes(num):
         return bytes(choices(POOL, k=num))
+
+    def verify_sha(m1, m2):
+        sha256sum = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        sha256sum.update(m1)
+        tag1 = sha256sum.finalize()
+
+        sha256sum = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        sha256sum.update(m2)
+        tag2 = sha256sum.finalize()
+
+        if tag1 != tag2:
+            raise ValueError("BadCrypto: sha doesn't match")
+
+    def decrypt(password, data):
+        data = b64decode(bytearray(data, "utf-8"))
+
+        salt = data[:16]
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=1000,
+            backend=default_backend()
+        )
+
+        key = kdf.derive(bytes(password, "utf-8"))
+
+        sha256sum = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        sha256sum.update(key)
+        subkeys = sha256sum.finalize()
+
+        hmac256sum = hmac.HMAC(subkeys[16:], hashes.SHA256(), backend=default_backend())
+
+        hmac256sum.update(data[16:-32])
+        tag = hmac256sum.finalize()
+
+        BadCrypto.verify_sha(tag, data[-32:])
+
+        iv = data[16:32]
+        decryptor = Cipher(
+            algorithms.AES(subkeys[:16]),
+            modes.CBC(iv),
+            backend=default_backend()
+        ).decryptor()
+
+        ct = data[32:-32]
+
+        pt = decryptor.update(ct) + decryptor.finalize()
+
+        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
+        pt = unpadder.update(pt) + unpadder.finalize()
+
+        return pt.decode("utf-8")
 
     def encrypt(password, data):
         salt = BadCrypto.randbytes(16)
