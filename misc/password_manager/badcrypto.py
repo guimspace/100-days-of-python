@@ -3,7 +3,7 @@ from random import choices
 
 from cryptography.exceptions import AlreadyFinalized
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, padding
+from cryptography.hazmat.primitives import hashes, hmac, padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
@@ -26,24 +26,29 @@ class BadCrypto:
 
         key = kdf.derive(bytes(password, "utf-8"))
 
-        iv = BadCrypto.randbytes(12)
+        sha256sum = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        sha256sum.update(key)
+        subkeys = sha256sum.finalize()
+
+        iv = BadCrypto.randbytes(16)
         encryptor = Cipher(
-            algorithms.AES(key),
+            algorithms.AES(subkeys[:16]),
             modes.CBC(iv),
             backend=default_backend()
         ).encryptor()
-        encryptor.authenticate_additional_data(salt + iv)
-
-        padder = padding.PKCS7(256).padder()
 
         pt = bytes(data, "utf-8")
-        try:
-            padder.update(pt)
-        except AlreadyFinalized:
-            pass
-        else:
-            pt += padder.finalize()
+
+        padder = padding.PKCS7(algorithms.AES.block_size).padder()
+        pt = padder.update(pt)
+        pt += padder.finalize()
 
         ct = encryptor.update(pt)
+        ct += encryptor.finalize()
 
-        return b64encode(salt + iv + ct).decode("utf-8")
+        hmac256sum = hmac.HMAC(subkeys[16:], hashes.SHA256(), backend=default_backend())
+
+        hmac256sum.update(iv + ct)
+        tag = hmac256sum.finalize()
+
+        return b64encode(salt + iv + ct + tag).decode("utf-8")
