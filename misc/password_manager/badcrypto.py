@@ -17,21 +17,20 @@ class BadCrypto:
         if tag1 != tag2:
             raise ValueError("BadCrypto: sha doesn't match")
 
-    def decrypt(password, data):
+    def decrypt(password, data, salt):
         data = b64decode(bytearray(data, "utf-8"))
 
-        key = BadCipher.pbkdf2hmac_derive(data[:16], bytes(password, "utf-8"))
+        key = BadCipher.pbkdf2hmac_derive(salt, bytes(password, "utf-8"))
         subkeys = BadCipher.sha256sum(key)
 
-        tag = BadCipher.hmac256sum(subkeys[16:], data[16:-32])
+        tag = BadCipher.hmac256sum(subkeys[16:], data[:-32])
         BadCrypto.verify_sha(tag, data[-32:])
 
-        pt = BadCipher.decrypt(data[16:32], subkeys[:16], data[32:-32])
+        pt = BadCipher.decrypt(data[:16], subkeys[:16], data[16:-32])
 
         return pt.decode("utf-8")
 
-    def encrypt(password, data):
-        salt = BadCrypto.randbytes(16)
+    def encrypt(password, data, salt):
         key = BadCipher.pbkdf2hmac_derive(salt, bytes(password, "utf-8"))
         subkeys = BadCipher.sha256sum(key)
 
@@ -39,4 +38,4 @@ class BadCrypto:
         ct = BadCipher.encrypt(iv, subkeys[:16], bytes(data, "utf-8"))
         tag = BadCipher.hmac256sum(subkeys[16:], iv + ct)
 
-        return b64encode(salt + iv + ct + tag).decode("utf-8")
+        return b64encode(iv + ct + tag).decode("utf-8")
