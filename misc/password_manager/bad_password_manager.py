@@ -2,10 +2,7 @@ from app import App
 
 
 def main():
-    try:
-        App().launch()
-    except Exception:
-        pass
+    App().launch()
 
 
 if __name__ == "__main__":

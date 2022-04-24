@@ -46,10 +46,16 @@ class App:
         self._root.deiconify()
 
     def launch(self):
-        self._vault.open_vault()
-        self.create_frame()
-        self._entries["name"].focus()
-        self._root.mainloop()
+        try:
+            self._vault.open_vault()
+        except ValueError:
+            messagebox.showerror(title="Can't Open Vault",
+                                 message="Password is incorrect or vault is corrupted.")
+            self._root.destroy()
+        else:
+            self.create_frame()
+            self._entries["name"].focus()
+            self._root.mainloop()
 
     def add_item(self):
         item = {}
