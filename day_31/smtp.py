@@ -1,5 +1,7 @@
 import smtplib
 
+DRY_RUN = True
+
 
 def main():
     smtp_config = {
@@ -29,9 +31,10 @@ def main():
         print("Login is ok")
 
         try:
-            service.sendmail(from_addr=credentials["email"],
-                             to_addrs=dst_email,
-                             msg=f"Subject:{mail_subject}\n\n{mail_body}")
+            if not DRY_RUN:
+                service.sendmail(from_addr=credentials["email"],
+                                 to_addrs=dst_email,
+                                 msg=f"Subject:{mail_subject}\n\n{mail_body}")
         except Exception as err:
             print(err)
         else:
